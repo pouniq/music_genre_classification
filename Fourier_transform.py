@@ -18,7 +18,7 @@ ipd.Audio(BASE_PATH+disco)
 ipd.Audio(BASE_PATH+hiphop)
 ipd.Audio(BASE_PATH+rock)
 
-y_disco, sr = librosa.load('Data/genres_original/disco/disco.00007.wav', sr = 22050)
+y_disco, sr = librosa.load('Data/genres_original/disco/disco.00007.wav', sr = 22050, duration = 3)
 y_metal, _ = librosa.load('Data/genres_original/metal/metal.00007.wav', sr = 22050)
 y_hiphop, _ = librosa.load('Data/genres_original/hiphop/hiphop.00007.wav', sr = 22050)
 y_rock, _ = librosa.load('Data/genres_original/rock/rock.00007.wav', sr = 22050)
@@ -60,5 +60,5 @@ def mag_spec(signal, title, sr, f_ratio=1):
 
 mag_spec(y_metal, 'metal', sr, 0.5)
 mag_spec(y_hiphop, 'hiphoo', sr, 0.5)
-mag_spec(y_disco, 'disco', sr, 0.5)
+mag_spec(y_disco, 'disco', sr, 0.001)
 mag_spec(y_rock, 'rock', sr, 0.5)
