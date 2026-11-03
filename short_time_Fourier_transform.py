@@ -70,3 +70,4 @@ def make_spec(signal, FRAME_SIZE, HOP_SIZE, sr=sr):
     return stft_audio, plot
     
 make_spec(y_metal, FRAME_SIZE=FRAME_SIZE, HOP_SIZE= HOP_SIZE, sr=sr)
+
