@@ -25,6 +25,12 @@ y_disco, sr = librosa.load('Data/genres_original/disco/disco.00007.wav', sr = 22
 y_metal, _ = librosa.load('Data/genres_original/metal/metal.00007.wav', sr = 22050)
 y_hiphop, _ = librosa.load('Data/genres_original/hiphop/hiphop.00007.wav', sr = 22050)
 y_rock, _ = librosa.load('Data/genres_original/rock/rock.00007.wav', sr = 22050)
+y_blues, _ = librosa.load('Data/genres_original/blues/blues.00013.wav', sr= 22050)
+y_blues, _ = librosa.load('Data/genres_original/blues/blues.00015.wav', sr= 22050)
+y_metal1, _ = librosa.load('Data/genres_original/metal/metal.00013.wav', sr = 22050)
+
+
+y_ang, _ = librosa.load('/Users/pouniq/music_genre_classification/Data/Untitled.wav', sr = 22050, duration=30) 
 
 
 FRAME_SIZE = 2048
@@ -70,4 +76,6 @@ def make_spec(signal, FRAME_SIZE, HOP_SIZE, sr=sr):
     return stft_audio, plot
     
 make_spec(y_metal, FRAME_SIZE=FRAME_SIZE, HOP_SIZE= HOP_SIZE, sr=sr)
+make_spec(y_blues, FRAME_SIZE=FRAME_SIZE, HOP_SIZE=HOP_SIZE, sr=sr)
+make_spec(y_ang, FRAME_SIZE=FRAME_SIZE, HOP_SIZE=HOP_SIZE, sr=sr)
 
