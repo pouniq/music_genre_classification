@@ -66,7 +66,6 @@ ber_disco.shape
 
 
 # band Energy Ratio
-
 frames = range(len(ber_disco))
 t = librosa.frames_to_time(frames=frames)
 
@@ -74,3 +73,7 @@ plt.figure(figsize=(25,10))
 plt.plot(t, ber_disco, color= 'red')
 plt.plot(t, ber_metal, color= 'blue')
 plt.show()
+
+
+if __name__ == "__main__":
+    print('ber loaded')

@@ -6,29 +6,45 @@ import librosa.display
 
 import IPython.display as ipd
 
+from make_band_energy_ratio import calculate_band_energy_ratio
 
 # amplitude envelope (ae)
 # this feature is the max value from the sample 
 
-DATASET_DIR = "Data/genres_original"   # GTZAN folder: genres_original/<genre>/<genre>.000xx.wav
+DATASET_DIR = "../Data/genres_original"   # GTZAN folder: genres_original/<genre>/<genre>.000xx.wav
 SR = 22050
 SEG_SEC = 5
 N_FFT = 2048
 HOP = 512
 N_MFCC = 20
 
+
+def band_energy_ratio(y, sr, split_hz=2000, n_fft=N_FFT, hop=HOP, eps=1e-10):
+    S = np.abs(librosa.stft(y, n_fft=n_fft, hop_length=hop)) ** 2   # (1 + n_fft/2, n_frames)
+    freqs = librosa.fft_frequencies(sr=sr, n_fft=n_fft)
+    split_bin = np.searchsorted(freqs, split_hz)                     # first bin >= split_hz
+    low  = S[:split_bin].sum(axis=0)
+    high = S[split_bin:].sum(axis=0)
+    ber = np.log10((low + eps) / (high + eps))                       # log tames the heavy tail
+    return ber[np.newaxis, :]   
+
+
+
+
 def frame_features(y, sr):
+
     """Frame-level features -> dict of arrays shaped (n_features, n_frames)."""
     kw = dict(n_fft=N_FFT, hop_length=HOP)
     feats = {
         "chroma":    librosa.feature.chroma_stft(y=y, sr=sr, **kw),              # 12
         "rms":       librosa.feature.rms(y=y, frame_length=N_FFT, hop_length=HOP),
-        "centroid":  librosa.feature.spectral_centroid(y=y, sr=sr, **kw),
-        "bandwidth": librosa.feature.spectral_bandwidth(y=y, sr=sr, **kw),
+        "spectral_centroid":  librosa.feature.spectral_centroid(y=y, sr=sr, **kw),
+        "spectral_bandwidth": librosa.feature.spectral_bandwidth(y=y, sr=sr, **kw),
         "rolloff":   librosa.feature.spectral_rolloff(y=y, sr=sr, **kw),
         "zcr":       librosa.feature.zero_crossing_rate(y, frame_length=N_FFT, hop_length=HOP),
         "contrast":  librosa.feature.spectral_contrast(y=y, sr=sr, **kw),        # 7
         "mfcc":      librosa.feature.mfcc(y=y, sr=sr, n_mfcc=N_MFCC, **kw),
+        "ber": band_energy_ratio(y, sr, split_hz=2000, n_fft=N_FFT, hop=HOP),
     }
     return feats
 
