@@ -7,6 +7,9 @@ from sklearn.model_selection import GroupKFold, GridSearchCV
 from sklearn.metrics import accuracy_score, confusion_matrix, f1_score
 import matplotlib.pyplot as plt
 import seaborn as sns
+from sklearn.base import clone
+
+import joblib
 
 df = pd.read_csv('gtzan_5s_features.csv')
 
@@ -64,7 +67,7 @@ for split_num ,(train_idx, test_idx) in enumerate(gf.split(X, y, groups=groups))
     )
     
     search_grid.fit(X_train, np.ravel(y_train), groups=current_group)
-    y_pred = search_grid.fit(X_test)
+    y_pred = search_grid.predict(X_test)
     best_params.append(search_grid.best_params_)
     
     y_preds[split_num] = {"test_idx": test_idx, "y_true": np.ravel(y_test), "y_pred": y_pred}
@@ -88,12 +91,24 @@ for split_num ,(train_idx, test_idx) in enumerate(gf.split(X, y, groups=groups))
 print(f'f1 score mean: {np.mean(scores_f1), np.std(scores_f1)}')
 print(f'accuracy score mean: {np.mean(scores_acc), np.std(scores_acc)}')
 
-    
+scores_acc
+scores_f1 
+
+
+best_params
+
+
+## best params -> l2: 0, lr: 0.2, mln: 15
+
+best_model = HistGradientBoostingClassifier(l2_regularization=0, learning_rate=0.2, max_leaf_nodes=15)
+model = best_model.fit(X_train, y_train)
+y_pred = model.predict(X_test)
+
 
 confusion_matrix(y_test, y_pred)
 accuracy_score(y_test, y_pred=y_pred)
 
-sns.heatmap(confusion_matrix(y_test, y_pred))
+sns.heatmap(confusion_matrix(y_test, y_pred), annot=True)
 
 
 plt.figure(figsize=(10, 7))
@@ -105,4 +120,11 @@ plt.ylabel("Accuracy")
 plt.show()
 
 
+# save the tuned model
 
+best_model = clone(best_model).fit(X_train, y_train)
+joblib.dump(best_model, "saved_models/tuned_best_model.joblib")
+
+
+
+joblib.dump(y, "saved_models/tunned_genre_names.joblib")
