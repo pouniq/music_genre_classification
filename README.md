@@ -1,4 +1,4 @@
-![Figure1](<back-100.png>)
+![Figure1](<back.jpg>)
 
 
 
