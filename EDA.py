@@ -27,7 +27,7 @@ fig, axes = plt.subplots(nrows, ncols, figsize=(5 * ncols, 3.5 * nrows),
 axes = axes.flatten()
 
 for ax, (genre, g) in zip(axes, df_5.groupby('genre')):
-    ax.plot(g['chroma2_mean'].values)
+    ax.plot(g['mfcc20_mean'].values)
     ax.set_title(genre)
 
 # hide unused axes if the grid is larger than the number of genres
@@ -42,9 +42,14 @@ sns.scatterplot(data=df_5.reset_index(), x='index', y='chroma2_mean', hue='genre
 plt.show()
 
 
-sns.boxplot(data=df_5, x='genre', y='chroma2_mean')
-plt.xticks(rotation=45)
-plt.show()
+box_to_check = ['chroma2_mean', 'mfcc1_mean', 'mfcc2_mean', 'mfcc6_mean']
+for col in box_to_check:
+    sns.boxplot(data=df_5, x='genre', y=col)
+    plt.xticks(rotation=45)
+    plt.show()
+
+
+
 
 
 
