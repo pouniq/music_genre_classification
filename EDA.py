@@ -16,13 +16,27 @@ df_5.groupby('genre')['chroma2_mean'].median()
 
 
 
-for genre, g in df_5.groupby('genre'):
-    plt.plot(g['chroma2_mean'].values, label=genre)
-plt.legend()
-plt.ylabel('chroma2_mean')
+
+genres = df_5['genre'].unique()
+n = len(genres)
+ncols = 3
+nrows = -(-n // ncols)  # ceil division
+
+fig, axes = plt.subplots(nrows, ncols, figsize=(5 * ncols, 3.5 * nrows),
+                         sharex=True, sharey=True)
+axes = axes.flatten()
+
+for ax, (genre, g) in zip(axes, df_5.groupby('genre')):
+    ax.plot(g['chroma2_mean'].values)
+    ax.set_title(genre)
+
+# hide unused axes if the grid is larger than the number of genres
+for ax in axes[n:]:
+    ax.set_visible(False)
+
+fig.supylabel('chroma2_mean')
+fig.tight_layout()
 plt.show()
-
-
 
 sns.scatterplot(data=df_5.reset_index(), x='index', y='chroma2_mean', hue='genre', s=10)
 plt.show()
