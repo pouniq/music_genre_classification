@@ -51,5 +51,5 @@ def predict_song(path):
         return [(genre_names[vals[i]], counts[i] / len(codes)) for i in order[:3]]
 
 if __name__ == "__main__":
-    for genre, score in predict_song("data/test/toraj_shabankhani _afsos.wav"):
+    for genre, score in predict_song("data/test/Reza Pishro -  Ghabrestone Hip Hop.wav"):
         print(f'the music is {genre} with score of {score:.2f}')
