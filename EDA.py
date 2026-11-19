@@ -50,9 +50,12 @@ for col in box_to_check:
 
 
 
-## Chroma Features
 
 df_5.columns
+
+## Chroma Features
+
+
 
 
 ### chroma mean
@@ -110,17 +113,71 @@ plt.tight_layout()
 plt.show()
 ## RMS features
 
-## spectral centroid
+rms_feat_mean = df_5['rms1_mean']
+rms_feat_var = df_5['rms1_var']
+
+plt.figure(figsize=(17,10))
+sns.boxplot(data=df_5, x='genre', y=rms_feat_mean)
+plt.tight_layout()
+plt.show()
+
+
+plt.figure(figsize=(17,10))
+sns.boxplot(data=df_5, x='genre', y=rms_feat_var)
+plt.tight_layout()
+plt.show()
+
+
+##  centroid
+sc_mean = df_5['centroid1_mean']
+
+plt.figure(figsize=(17,10))
+sns.boxplot(data=df_5, x='genre', y=sc_mean)
+plt.tight_layout()
+plt.show()
+
+
 
 ## spectral bandwidth
+sb_mean = df_5['bandwidth1_mean']
+
+plt.figure(figsize=(17,10))
+sns.boxplot(data=df_5, x='genre', y=sb_mean)
+plt.tight_layout()
+plt.show()
+
+
+
 
 ## rolloff mean
 
+plt.figure(figsize=(17,10))
+sns.boxplot(data=df_5, x='genre', y='rolloff1_mean')
+plt.tight_layout()
+plt.show()
+
 ## zero crossing rate
+plt.figure(figsize=(17,10))
+sns.boxplot(data=df_5, x='genre', y='zcr1_mean')
+plt.tight_layout()
+plt.show()
+
 
 ## contrast
 
+contrast_mean = df_5.iloc[:,range(38,48,2)]
+contrast_mean['genre'] = df_5['genre'] 
+
+for col in contrast_mean.drop('genre', axis=1):
+    sns.boxplot(data=contrast_mean, x='genre', y=col)
+    plt.title(f'{col}')
+    plt.xticks(rotation=45)
+    plt.show()
+
+
 ## ber mean
+
+
 
 
 
