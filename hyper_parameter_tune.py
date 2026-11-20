@@ -3,7 +3,7 @@ import pandas as pd
 
 from sklearn.ensemble import HistGradientBoostingClassifier
 
-from sklearn.model_selection import GroupKFold, GridSearchCV
+from sklearn.model_selection import GroupKFold, GridSearchCV, GroupShuffleSplit, cross_validate
 from sklearn.metrics import accuracy_score, confusion_matrix, f1_score
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -100,15 +100,42 @@ best_params
 
 ## best params -> l2: 0, lr: 0.2, mln: 15
 
-best_model = HistGradientBoostingClassifier(l2_regularization=0, learning_rate=0.2, max_leaf_nodes=15)
-model = best_model.fit(X_train, y_train)
-y_pred = model.predict(X_test)
+gss = GroupShuffleSplit(n_splits=1, test_size=0.2, random_state=42)
+train_idx, test_idx = next(gss.split(X, y, groups=groups))
+X_train, X_test = X.iloc[train_idx], X.iloc[test_idx]
+y_train, y_test = y.iloc[train_idx], y.iloc[test_idx]
+groups_train = groups.iloc[train_idx] 
 
+
+cv_results = cross_validate(
+    HistGradientBoostingClassifier(learning_rate=0.2, max_leaf_nodes=15, random_state=42),
+    X_train, y_train,
+    groups=groups_train,
+    cv=GroupKFold(n_splits=5),
+    scoring=["accuracy", "f1_macro"],
+)
+
+
+df_cv_result = pd.DataFrame(cv_results)
+df_cv_result['test_f1_macro'].mean()
+df_cv_result['test_accuracy'].mean()
+
+
+best_model = HistGradientBoostingClassifier(learning_rate=0.2, max_leaf_nodes=15, random_state=42)
+fit_model = best_model.fit(X_train, y_train)
+y_pred = fit_model.predict(X_test)
 
 confusion_matrix(y_test, y_pred)
 accuracy_score(y_test, y_pred=y_pred)
 
-sns.heatmap(confusion_matrix(y_test, y_pred), annot=True)
+
+genres = ['blues','classical', 'country', 'disco', 'hiphop','jazz','metal', 'pop', 'reggae', 'rock']
+sns.heatmap(confusion_matrix(y_test, y_pred), annot=True, fmt='d', xticklabels=genres, yticklabels=genres)
+# y -> the real world 
+# x -> the predicted answer
+
+# میتوانیم ببینیم که مدل ما نمی تواند به خوبی سبک راک را تشخیص دهد به همین دلیل نیاز داریم که دیتاهای جدیدی 
+# رو وارد مدل کنیم تا تشخیص مدل بهتر شود
 
 
 plt.figure(figsize=(10, 7))
