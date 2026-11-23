@@ -27,6 +27,8 @@ groups = df_train['file'].reset_index(drop=True)
 X_train = df_train.drop(columns=["file", "genre", "segment", "start_sec"]).reset_index(drop=True)
 y_train = df_train["genre"].reset_index(drop=True)
 
+X_train.columns
+
 
 X_test = df_test.drop(columns=["file", "genre", "segment", "start_sec"])
 y_test = df_test['genre']

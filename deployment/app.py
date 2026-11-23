@@ -9,7 +9,7 @@ import pandas as pd
 import soundfile as sf
 import streamlit as st
 
-from predict import predict_genre, predict_genre_new
+from predict import predict_genre, predict_genre_new, predict_svc_genre, predict_svc_base_genre
 
 CLIP_SEC = 30
 
@@ -86,14 +86,30 @@ if uploaded is not None:
             with st.spinner("Analyzing the song..."):
                 results = predict_genre(tmp_path)
                 results_new_model = predict_genre_new(tmp_path)
+                
+                result_raw_svm = predict_svc_base_genre(tmp_path)
+                result_svc_tuned = predict_svc_genre(tmp_path)
 
             st.divider()
+           # HGB 
             top_genre, top_score = results[0]
             top_genre_new, top_score_new = results_new_model[0]
+           # SVM 
+            top_genre_svm, top_score_svm = result_svc_tuned[0]
+            top_genre_raw_svm, top_score_raw_svm = result_raw_svm[0] 
+            
+            
             df = pd.DataFrame(results, columns=["genre", "score"]).set_index("genre")
             df_new = pd.DataFrame(results_new_model, columns=["genre", "score"]).set_index("genre")
+           
+            df_svm = pd.DataFrame(result_svc_tuned, columns=["genre", "score"]).set_index("genre")
+            df_svm_raw = pd.DataFrame(result_raw_svm, columns=["genre", "score"]).set_index("genre")
+             
+            
+            
+            
 
-            st.caption("Top 3")
+            st.caption("Top 3, HGB")
             col1, col2 = st.columns(2)
 
             with col1:
@@ -103,10 +119,27 @@ if uploaded is not None:
                 st.bar_chart(df)
 
             with col2:
-                st.markdown("#### Model 2, Tuned HGB")
+                st.markdown("#### Model 1 (tuned), HGB")
                 st.badge(top_genre_new)   # was top_genre
                 st.success(f"**{top_genre_new}** ({top_score_new:.0%})")
                 st.bar_chart(df_new)
+                
+                
+                
+            st.caption("Top 3, SVC")
+            col1, col2 = st.columns(2)
+
+            with col1:
+                st.markdown("#### Model 2, SVM (classifier)")
+                st.badge(top_genre_raw_svm)
+                st.success(f"**{top_genre_raw_svm}** ({top_score_raw_svm:.0%})")
+                st.bar_chart(df_svm)
+
+            with col2:
+                st.markdown("#### Model 2, Tuned SVM")
+                st.badge(top_genre_svm)   # was top_genre
+                st.success(f"**{top_genre_svm}** ({top_score_svm:.0%})")
+                st.bar_chart(df_svm_raw)
 
         except Exception as e:
             st.exception(e)
