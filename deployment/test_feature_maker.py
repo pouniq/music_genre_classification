@@ -17,8 +17,8 @@ def frame_features(y, sr):
     return {
         "chroma": librosa.feature.chroma_stft(y=y, sr=sr, **kw),
         "rms": librosa.feature.rms(y=y, frame_length=N_FFT, hop_length=HOP),
-        "spectral_centroid": librosa.feature.spectral_centroid(y=y, sr=sr, **kw),
-        "spectral_bandwidth": librosa.feature.spectral_bandwidth(y=y, sr=sr, **kw),
+        "centroid": librosa.feature.spectral_centroid(y=y, sr=sr, **kw),
+        "bandwidth": librosa.feature.spectral_bandwidth(y=y, sr=sr, **kw),
         "rolloff": librosa.feature.spectral_rolloff(y=y, sr=sr, **kw),
         "zcr": librosa.feature.zero_crossing_rate(y, frame_length=N_FFT, hop_length=HOP),
         "contrast": librosa.feature.spectral_contrast(y=y, sr=sr, **kw),
