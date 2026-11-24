@@ -67,48 +67,39 @@ def predict_genre_new(path):
 
 
 
-## SVC:
+
+def _predict(model, path, names, top_k=3):
+    feats = song_to_features(path)
+    feats = feats[list(model.feature_names_in_)]      # drops ber1_*, fails loudly if a feature is missing
+
+    classes = model.classes_
+    if np.issubdtype(classes.dtype, np.integer):      # integer labels: 0-based or 1-based
+        offset = int(classes.min())
+        to_name = lambda c: names[int(c) - offset]
+    else:                                             # labels are already genre names
+        to_name = str
+
+    if hasattr(model, "predict_proba"):               # SVC trained with probability=True
+        proba = model.predict_proba(feats).mean(axis=0)
+        order = np.argsort(proba)[::-1][:top_k]
+        return [(to_name(classes[i]), float(proba[i])) for i in order]
+
+    pred = model.predict(feats)                       # otherwise: majority vote over segments
+    vals, counts = np.unique(pred, return_counts=True)
+    order = np.argsort(counts)[::-1][:top_k]
+    return [(to_name(vals[i]), float(counts[i] / len(pred))) for i in order]
+
 
 def predict_svc_base_genre(path, top_k=3):
-    feats = song_to_features(path)
-    feats = feats[list(model_svc_base.feature_names_in_)]
-    codes = model_svc_base.predict(feats)
-    
-    vals, counts = np.unique(codes, return_counts=True)
-    
-    
-    order = np.argsort(counts)[::-1][:top_k]
-    return [(str(vals[i]), float(counts[i] / len(codes))) for i in order]
-
-
-    
-
-
-
+    return _predict(model_svc_base, path, genre_names, top_k)
 
 def predict_svc_genre(path, top_k=3):
-    feats = song_to_features(path)
-    
-    classes = model_svc.classes_
-    offset = 1   # set to 0 if your training labels start at 0
-
-   # same columns, same order as training
-    feats = feats.reindex(columns=model_new.feature_names_in_)
-
-    if hasattr(model_svc, "predict_proba"):  # RF, HGB, LR
-        proba = model_svc.predict_proba(feats).mean(axis=0)
-        order = np.argsort(proba)[::-1]
-        return [(genre_names[model_new.classes_[i]], float(proba[i])) for i in order[:top_k]]
-    else:  # SVC: majority vote
-        codes = model_svc.predict(feats)
-        vals, counts = np.unique(codes, return_counts=True)
-        order = np.argsort(counts)[::-1]
-        return [(genre_names[vals[i]], float(counts[i] / len(codes))) for i in order[:top_k]]
+    return _predict(model_svc, path, genre_names_new, top_k)   # use genre_names if that's what it was trained with
 
 
 
 if __name__ == "__main__":
-    for genre, score in predict_svc_base_genre("../data/test/Chuck Berry - You Never Can Tell.wav", 4):
+    for genre, score in predict_genre("../data/test/Future - Trap Niggas.wav"):
         print(f"the music is {genre} with score of {score:.2f}")
         
    
